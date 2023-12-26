@@ -1,12 +1,12 @@
+import 'firebase_options.dart';
+import 'pages/login_page.dart';
+import 'pages/splash_page.dart';
+import 'pages/detail_page.dart';
+import 'pages/add_form_page.dart';
+import 'pages/register_page.dart';
 import 'package:flutter/material.dart';
-import 'package:laporbook/firebase_options.dart';
+import 'pages/dashboard/dashboard_page.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:laporbook/pages/LoginPage.dart';
-import 'package:laporbook/pages/SplashPage.dart';
-import 'package:laporbook/pages/DetailPage.dart';
-import 'package:laporbook/pages/AddFormPage.dart';
-import 'package:laporbook/pages/RegisterPage.dart';
-import 'package:laporbook/pages/dashboard/DashboardPage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,11 +19,11 @@ Future<void> main() async {
     initialRoute: '/',
     routes: {
       '/': (context) => const SplashPage(),
-      '/login': (context) => LoginPage(),
+      '/login': (context) => const LoginPage(),
+      '/add': (context) => const AddFormPage(),
+      '/detail': (context) => const DetailPage(),
       '/register': (context) => const RegisterPage(),
       '/dashboard': (context) => const DashboardPage(),
-      '/add': (context) => AddFormPage(),
-      '/detail': (context) => DetailPage(),
     },
   ));
 }

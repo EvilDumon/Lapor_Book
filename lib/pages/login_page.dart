@@ -5,6 +5,8 @@ import '../components/input_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   State<StatefulWidget> createState() => LoginPageState();
 }
@@ -53,20 +55,17 @@ class LoginPageState extends State<LoginPage> {
                   children: [
                     const SizedBox(height: 80),
                     Text('Login', style: headerStyle(level: 1)),
-                    Container(
-                      child: const Text(
-                        'Login to your account',
-                        style: TextStyle(color: Colors.grey),
-                      ),
+                    const Text(
+                      'Login to your account',
+                      style: TextStyle(color: Colors.grey),
                     ),
                     const SizedBox(height: 50),
                     Container(
-                      margin: EdgeInsets.symmetric(horizontal: 30),
+                      margin: const EdgeInsets.symmetric(horizontal: 30),
                       child: Form(
                           key: _formKey,
                           child: Column(
                             children: [
-                              // tempat inputan nanti
                               InputLayout(
                                   'Email',
                                   TextFormField(
@@ -75,7 +74,7 @@ class LoginPageState extends State<LoginPage> {
                                           }),
                                       validator: notEmptyValidator,
                                       decoration: customInputDecoration(
-                                          "email@email.com"))),
+                                          "example@gmail.com"))),
                               InputLayout(
                                   'Password',
                                   TextFormField(
@@ -86,7 +85,7 @@ class LoginPageState extends State<LoginPage> {
                                       obscureText: true,
                                       decoration: customInputDecoration(""))),
                               Container(
-                                margin: EdgeInsets.only(top: 20),
+                                margin: const EdgeInsets.only(top: 20),
                                 width: double.infinity,
                                 child: FilledButton(
                                     style: buttonStyle,

@@ -24,12 +24,10 @@ class _ProfileState extends State<Profile> {
     return SafeArea(
       child: Container(
         width: double.infinity,
-        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: Column(
           children: [
-            SizedBox(
-              height: 100,
-            ),
+            const SizedBox(height: 100),
             Text(
               widget.akun.nama,
               style: TextStyle(
@@ -44,16 +42,14 @@ class _ProfileState extends State<Profile> {
                   fontWeight: FontWeight.bold,
                   fontSize: 20),
             ),
-            SizedBox(
-              height: 40,
-            ),
+            const SizedBox(height: 40),
             Container(
               width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(color: primaryColor),
-                ), // Sudut border
+                ),
               ),
               child: Text(
                 widget.akun.noHP,
@@ -65,7 +61,7 @@ class _ProfileState extends State<Profile> {
             ),
             Container(
               width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(vertical: 10),
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(color: primaryColor),
@@ -79,9 +75,7 @@ class _ProfileState extends State<Profile> {
                     fontSize: 20),
               ),
             ),
-            SizedBox(
-              height: 35,
-            ),
+            const SizedBox(height: 35),
             Container(
               width: double.infinity,
               child: FilledButton(
@@ -89,13 +83,11 @@ class _ProfileState extends State<Profile> {
                 onPressed: () {
                   keluar(context);
                 },
-                child: Text('Logout',
+                child: const Text('Logout',
                     style: TextStyle(color: Colors.white, fontSize: 20)),
               ),
             ),
-            SizedBox(
-              height: 35,
-            ),
+            const SizedBox(height: 35),
           ],
         ),
       ),

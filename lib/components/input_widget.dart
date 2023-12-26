@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'styles.dart';
+import 'package:flutter/material.dart';
 
 class InputLayout extends StatelessWidget {
   String label;

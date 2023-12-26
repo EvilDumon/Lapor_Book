@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:laporbook/models/akun.dart';
+import 'package:laporbook/pages/all_laporan.dart';
+import 'package:laporbook/pages/my_laporan.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:laporbook/components/styles.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:laporbook/pages/dashboard/profile_page.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return DashboardFull();
+    return const DashboardFull();
   }
 }
 
@@ -21,9 +24,7 @@ class DashboardFull extends StatefulWidget {
 }
 
 class _DashboardFull extends State<DashboardFull> {
-  int _selectedIndex = 0;
   bool _isLoading = false;
-  List<Widget> pages = [];
 
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
@@ -36,6 +37,7 @@ class _DashboardFull extends State<DashboardFull> {
     email: '',
     role: '',
   );
+
   void getAkun() async {
     setState(() {
       _isLoading = true;
@@ -48,7 +50,7 @@ class _DashboardFull extends State<DashboardFull> {
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
-        var userData = querySnapshot.docs.first.data() as Map<String, dynamic>;
+        var userData = querySnapshot.docs.first.data();
 
         setState(() {
           akun = Akun(
@@ -64,7 +66,6 @@ class _DashboardFull extends State<DashboardFull> {
     } catch (e) {
       final snackbar = SnackBar(content: Text(e.toString()));
       ScaffoldMessenger.of(context).showSnackBar(snackbar);
-      print(e);
     } finally {
       setState(() {
         _isLoading = false;
@@ -72,31 +73,36 @@ class _DashboardFull extends State<DashboardFull> {
     }
   }
 
+  int _selectedIndex = 0;
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 
+  List<Widget> pages = [];
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getAkun();
-    pages = <Widget>[
-      // AllLaporan(akun: akun),
-      // MyLaporan(akun: akun),
-      // Profile(akun: akun),
-    ];
   }
 
   @override
   Widget build(BuildContext context) {
+    pages = <Widget>[
+      AllLaporan(akun: akun),
+      MyLaporan(akun: akun),
+      Profile(akun: akun),
+    ];
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: primaryColor,
-        child: Icon(Icons.add, size: 35),
-        onPressed: () {},
+        child: const Icon(Icons.add, size: 35),
+        onPressed: () {
+          Navigator.pushNamed(context, '/add', arguments: {
+            'akun': akun,
+          });
+        },
       ),
       appBar: AppBar(
         backgroundColor: primaryColor,
