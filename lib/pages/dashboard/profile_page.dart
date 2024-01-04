@@ -15,6 +15,7 @@ class _ProfileState extends State<Profile> {
 
   void keluar(BuildContext context) async {
     await _auth.signOut();
+    if (!mounted) return;
     Navigator.pushNamedAndRemoveUntil(
         context, '/login', ModalRoute.withName('/login'));
   }

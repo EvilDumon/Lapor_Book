@@ -7,7 +7,7 @@ var dangerColor = const Color(0xFFE76F51);
 var greyColor = const Color(0xFFAFAFAF);
 
 TextStyle headerStyle({int level = 1, bool dark = true}) {
-  List<double> levelSize = [30, 24, 20];
+  List<double> levelSize = [30, 24, 20, 14, 12];
   return TextStyle(
       fontSize: levelSize[level - 1],
       fontWeight: FontWeight.bold,

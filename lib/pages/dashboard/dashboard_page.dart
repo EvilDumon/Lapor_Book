@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:laporbook/models/akun.dart';
-import 'package:laporbook/pages/all_laporan.dart';
-import 'package:laporbook/pages/my_laporan.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:laporbook/components/styles.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:laporbook/pages/dashboard/my_laporan.dart';
+import 'package:laporbook/pages/dashboard/all_laporan.dart';
 import 'package:laporbook/pages/dashboard/profile_page.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -24,7 +24,9 @@ class DashboardFull extends StatefulWidget {
 }
 
 class _DashboardFull extends State<DashboardFull> {
+  int _selectedIndex = 0;
   bool _isLoading = false;
+  List<Widget> pages = [];
 
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
@@ -37,6 +39,18 @@ class _DashboardFull extends State<DashboardFull> {
     email: '',
     role: '',
   );
+
+  @override
+  void initState() {
+    super.initState();
+    getAkun();
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   void getAkun() async {
     setState(() {
@@ -65,26 +79,12 @@ class _DashboardFull extends State<DashboardFull> {
       }
     } catch (e) {
       final snackbar = SnackBar(content: Text(e.toString()));
-      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(snackbar);
     } finally {
       setState(() {
         _isLoading = false;
       });
     }
-  }
-
-  int _selectedIndex = 0;
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  List<Widget> pages = [];
-  @override
-  void initState() {
-    super.initState();
-    getAkun();
   }
 
   @override

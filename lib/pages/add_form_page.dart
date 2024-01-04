@@ -19,18 +19,16 @@ class AddFormPage extends StatefulWidget {
 }
 
 class AddFormState extends State<AddFormPage> {
-  final _auth = FirebaseAuth.instance;
-  final _firestore = FirebaseFirestore.instance;
-  final _storage = FirebaseStorage.instance;
-
   bool _isLoading = false;
+  final _auth = FirebaseAuth.instance;
+  final _storage = FirebaseStorage.instance;
+  final _firestore = FirebaseFirestore.instance;
 
+  XFile? file;
   String? judul;
   String? instansi;
   String? deskripsi;
-
   ImagePicker picker = ImagePicker();
-  XFile? file;
 
   Image imagePreview() {
     if (file == null) {
@@ -38,43 +36,6 @@ class AddFormState extends State<AddFormPage> {
     } else {
       return Image.file(File(file!.path), width: 180, height: 180);
     }
-  }
-
-  Future<dynamic> uploadDialog(BuildContext context) {
-    return showDialog(
-        context: context,
-        builder: (BuildContext) {
-          return AlertDialog(
-            title: const Text('Pilih sumber '),
-            actions: [
-              TextButton(
-                onPressed: () async {
-                  XFile? upload =
-                      await picker.pickImage(source: ImageSource.camera);
-
-                  setState(() {
-                    file = upload;
-                  });
-
-                  Navigator.of(context).pop();
-                },
-                child: const Icon(Icons.camera_alt),
-              ),
-              TextButton(
-                onPressed: () async {
-                  XFile? upload =
-                      await picker.pickImage(source: ImageSource.gallery);
-                  setState(() {
-                    file = upload;
-                  });
-
-                  Navigator.of(context).pop();
-                },
-                child: const Icon(Icons.photo_library),
-              ),
-            ],
-          );
-        });
   }
 
   Future<Position> getCurrentLocation() async {
@@ -145,21 +106,58 @@ class AddFormState extends State<AddFormPage> {
         'deskripsi': deskripsi,
         'gambar': url,
         'nama': akun.nama,
-        'status': 'Posted', // posted, process, done
+        'status': 'Posted',
         'tanggal': timestamp,
         'maps': maps,
       }).catchError((e) {
         throw e;
       });
-      Navigator.popAndPushNamed(context, '/dashboard');
+      if (context.mounted) Navigator.popAndPushNamed(context, '/dashboard');
     } catch (e) {
       final snackbar = SnackBar(content: Text(e.toString()));
-      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(snackbar);
     } finally {
       setState(() {
         _isLoading = false;
       });
     }
+  }
+
+  Future<dynamic> uploadDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (BuildContext) {
+          return AlertDialog(
+            title: const Text('Pilih sumber '),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  XFile? upload =
+                      await picker.pickImage(source: ImageSource.camera);
+
+                  setState(() {
+                    file = upload;
+                  });
+
+                  if (context.mounted) Navigator.of(context).pop();
+                },
+                child: const Icon(Icons.camera_alt),
+              ),
+              TextButton(
+                onPressed: () async {
+                  XFile? upload =
+                      await picker.pickImage(source: ImageSource.gallery);
+                  setState(() {
+                    file = upload;
+                  });
+
+                  if (context.mounted) Navigator.of(context).pop();
+                },
+                child: const Icon(Icons.photo_library),
+              ),
+            ],
+          );
+        });
   }
 
   @override
@@ -168,7 +166,6 @@ class AddFormState extends State<AddFormPage> {
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
     final Akun akun = arguments['akun'];
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: primaryColor,
@@ -220,15 +217,15 @@ class AddFormState extends State<AddFormPage> {
                             'Instansi',
                             DropdownButtonFormField<String>(
                                 decoration: customInputDecoration('Instansi'),
-                                items: dataInstansi
-                                    .map((e) => DropdownMenuItem(
-                                          value: e,
-                                          child: Text(e),
-                                        ))
-                                    .toList(),
-                                onChanged: (selected) => setState(() {
-                                      instansi = selected;
-                                    }))),
+                                items: dataInstansi.map((e) {
+                                  return DropdownMenuItem<String>(
+                                      value: e, child: Text(e));
+                                }).toList(),
+                                onChanged: (selected) {
+                                  setState(() {
+                                    instansi = selected;
+                                  });
+                                })),
                         InputLayout(
                             "Deskripsi laporan",
                             TextFormField(

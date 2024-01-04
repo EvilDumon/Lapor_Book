@@ -1,26 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:laporbook/models/akun.dart';
 import 'package:laporbook/models/laporan.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:laporbook/components/list_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class AllLaporan extends StatefulWidget {
+class MyLaporan extends StatefulWidget {
   final Akun akun;
-  const AllLaporan({super.key, required this.akun});
+  const MyLaporan({super.key, required this.akun});
 
   @override
-  State<AllLaporan> createState() => _AllLaporanState();
+  State<MyLaporan> createState() => _MyLaporanState();
 }
 
-class _AllLaporanState extends State<AllLaporan> {
-  final _firestore = FirebaseFirestore.instance;
-
+class _MyLaporanState extends State<MyLaporan> {
   List<Laporan> listLaporan = [];
+  final _auth = FirebaseAuth.instance;
+  final _firestore = FirebaseFirestore.instance;
 
   void getTransaksi() async {
     try {
-      QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await _firestore.collection('laporan').get();
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection('laporan')
+          .where('uid', isEqualTo: _auth.currentUser!.uid)
+          .get();
 
       setState(() {
         listLaporan.clear();
@@ -33,7 +36,6 @@ class _AllLaporanState extends State<AllLaporan> {
               isi: map['isi'],
             );
           }).toList();
-
           listLaporan.add(
             Laporan(
               uid: documents.data()['uid'],
@@ -52,8 +54,7 @@ class _AllLaporanState extends State<AllLaporan> {
         }
       });
     } catch (e) {
-      final snackbar = SnackBar(content: Text(e.toString()));
-      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      print(e);
     }
   }
 
@@ -71,12 +72,12 @@ class _AllLaporanState extends State<AllLaporan> {
               mainAxisSpacing: 10,
               childAspectRatio: 1 / 1.234,
             ),
-            itemCount: 1,
+            itemCount: listLaporan.length,
             itemBuilder: (context, index) {
               return ListItem(
                 laporan: listLaporan[index],
                 akun: widget.akun,
-                isLaporanku: false,
+                isLaporanku: true,
               );
             }),
       ),

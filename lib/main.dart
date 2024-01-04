@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'pages/dashboard/dashboard_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -19,8 +19,8 @@ Future<void> main() async {
     initialRoute: '/',
     routes: {
       '/': (context) => const SplashPage(),
-      '/login': (context) => const LoginPage(),
       '/add': (context) => const AddFormPage(),
+      '/login': (context) => const LoginPage(),
       '/detail': (context) => const DetailPage(),
       '/register': (context) => const RegisterPage(),
       '/dashboard': (context) => const DashboardPage(),

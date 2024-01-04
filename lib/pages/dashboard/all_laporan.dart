@@ -1,32 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:laporbook/models/akun.dart';
 import 'package:laporbook/models/laporan.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:laporbook/components/list_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class MyLaporan extends StatefulWidget {
+class AllLaporan extends StatefulWidget {
   final Akun akun;
-  const MyLaporan({super.key, required this.akun});
+  const AllLaporan({super.key, required this.akun});
 
   @override
-  State<MyLaporan> createState() => _MyLaporanState();
+  State<AllLaporan> createState() => _AllLaporanState();
 }
 
-class _MyLaporanState extends State<MyLaporan> {
-  final _auth = FirebaseAuth.instance;
-  final _firestore = FirebaseFirestore.instance;
-
+class _AllLaporanState extends State<AllLaporan> {
   List<Laporan> listLaporan = [];
+  final _firestore = FirebaseFirestore.instance;
 
   void getTransaksi() async {
     try {
-      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
-          .collection('laporan')
-          .where('uid',
-              isEqualTo: _auth.currentUser!
-                  .uid) // kondisi untuk menccari laporan yang sesuai dengan akun yang telah login
-          .get();
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await _firestore.collection('laporan').get();
 
       setState(() {
         listLaporan.clear();
@@ -39,6 +32,7 @@ class _MyLaporanState extends State<MyLaporan> {
               isi: map['isi'],
             );
           }).toList();
+
           listLaporan.add(
             Laporan(
               uid: documents.data()['uid'],
@@ -57,6 +51,8 @@ class _MyLaporanState extends State<MyLaporan> {
         }
       });
     } catch (e) {
+      final snackbar = SnackBar(content: Text(e.toString()));
+      ScaffoldMessenger.of(context).showSnackBar(snackbar);
       print(e);
     }
   }
@@ -75,12 +71,12 @@ class _MyLaporanState extends State<MyLaporan> {
               mainAxisSpacing: 10,
               childAspectRatio: 1 / 1.234,
             ),
-            itemCount: 1,
+            itemCount: listLaporan.length,
             itemBuilder: (context, index) {
               return ListItem(
                 laporan: listLaporan[index],
                 akun: widget.akun,
-                isLaporanku: true,
+                isLaporanku: false,
               );
             }),
       ),

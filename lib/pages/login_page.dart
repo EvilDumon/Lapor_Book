@@ -19,7 +19,6 @@ class LoginPageState extends State<LoginPage> {
 
   String? email;
   String? password;
-
   void login() async {
     setState(() {
       _isLoading = true;
@@ -29,11 +28,13 @@ class LoginPageState extends State<LoginPage> {
       await _auth.signInWithEmailAndPassword(
           email: email!, password: password!);
 
-      Navigator.pushNamedAndRemoveUntil(
-          context, '/dashboard', ModalRoute.withName('/dashboard'));
+      if (context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/dashboard', ModalRoute.withName('/dashboard'));
+      }
     } catch (e) {
       final snackbar = SnackBar(content: Text(e.toString()));
-      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(snackbar);
     } finally {
       setState(() {
         _isLoading = false;
@@ -54,10 +55,12 @@ class LoginPageState extends State<LoginPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const SizedBox(height: 80),
-                    Text('Login', style: headerStyle(level: 1)),
-                    const Text(
-                      'Login to your account',
-                      style: TextStyle(color: Colors.grey),
+                    Text('Login', style: headerStyle(level: 2)),
+                    Container(
+                      child: const Text(
+                        'Login to your account',
+                        style: TextStyle(color: Colors.grey),
+                      ),
                     ),
                     const SizedBox(height: 50),
                     Container(
@@ -74,7 +77,7 @@ class LoginPageState extends State<LoginPage> {
                                           }),
                                       validator: notEmptyValidator,
                                       decoration: customInputDecoration(
-                                          "example@gmail.com"))),
+                                          "email@email.com"))),
                               InputLayout(
                                   'Password',
                                   TextFormField(

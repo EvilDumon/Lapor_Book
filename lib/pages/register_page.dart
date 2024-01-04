@@ -17,19 +17,11 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _isLoading = false;
 
   String? nama;
-  String? noHP;
   String? email;
-
-  final TextEditingController _password = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  String? noHP;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-
   void register() async {
     setState(() {
       _isLoading = true;
@@ -48,19 +40,27 @@ class _RegisterPageState extends State<RegisterPage> {
         'email': email,
         'noHP': noHP,
         'docId': docId,
-        'role': 'user'
+        'role': 'user',
       });
 
-      Navigator.pushNamedAndRemoveUntil(
-          context, '/login', ModalRoute.withName('/login'));
+      if (context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/login', ModalRoute.withName('/login'));
+      }
     } catch (e) {
       final snackbar = SnackBar(content: Text(e.toString()));
-      ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(snackbar);
     } finally {
       setState(() {
         _isLoading = false;
       });
     }
+  }
+
+  final TextEditingController _password = TextEditingController();
+
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -77,9 +77,11 @@ class _RegisterPageState extends State<RegisterPage> {
                   children: [
                     const SizedBox(height: 80),
                     Text('Register', style: headerStyle(level: 1)),
-                    const Text(
-                      'Create your profile to start your journey',
-                      style: TextStyle(color: Colors.grey),
+                    Container(
+                      child: const Text(
+                        'Create your profile to start your journey',
+                        style: TextStyle(color: Colors.grey),
+                      ),
                     ),
                     const SizedBox(height: 50),
                     Container(
@@ -88,6 +90,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           key: _formKey,
                           child: Column(
                             children: [
+                              // di sini nanti komponen inputnya
                               InputLayout(
                                   'Nama',
                                   TextFormField(
@@ -105,7 +108,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                           }),
                                       validator: notEmptyValidator,
                                       decoration: customInputDecoration(
-                                          "example@gmail.com"))),
+                                          "email@email.com"))),
                               InputLayout(
                                   'No. Handphone',
                                   TextFormField(

@@ -28,13 +28,7 @@ class _DetailPageState extends State<DetailPage> {
       context: context,
       builder: (BuildContext context) {
         return StatusDialog(
-          status: status!,
           laporan: laporan,
-          onValueChanged: (value) {
-            setState(() {
-              status = value;
-            });
-          },
         );
       },
     );
