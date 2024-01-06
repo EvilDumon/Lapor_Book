@@ -4,6 +4,7 @@ import 'package:laporbook/models/akun.dart';
 import 'package:laporbook/models/laporan.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:laporbook/components/styles.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:laporbook/components/status_dialog.dart';
 
 class DetailPage extends StatefulWidget {
@@ -13,8 +14,10 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
-  final bool _isLoading = false;
+  final _firestore = FirebaseFirestore.instance;
   String? status;
+  List<Liked>? listLiked = [];
+  final bool _isLoading = false;
 
   Future launch(String uri) async {
     if (uri == '') return;
@@ -34,15 +37,94 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
+  void getLike(Laporan laporan) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection('laporan')
+          .where('docId', isEqualTo: laporan.docId)
+          .get();
+
+      setState(() {
+        listLiked?.clear();
+        for (var documents in querySnapshot.docs) {
+          List<dynamic>? likeData = documents.data()['liked'];
+
+          likeData?.map((map) {
+            return listLiked?.add(Liked(
+              uid: map['uid'],
+              tanggalLike: map['tanggalLike'],
+            ));
+          }).toList();
+        }
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void like(Akun akun, Laporan laporan) async {
+    CollectionReference laporanCollection = _firestore.collection('laporan');
+    Timestamp timestamp = Timestamp.fromDate(DateTime.now());
+    try {
+      listLiked?.add(Liked(
+        uid: akun.uid,
+        tanggalLike: timestamp.toString(),
+      ));
+      await laporanCollection.doc(laporan.docId).update({
+        'liked': listLiked,
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<bool?> isLike(Akun akun, Laporan laporan) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection('laporan')
+          .where('docId', isEqualTo: laporan.docId)
+          .get();
+
+      for (var documents in querySnapshot.docs) {
+        List<dynamic>? likeData = documents.data()['liked'];
+        likeData?.map((map) {
+          if (map['uid'] == akun.uid) return true;
+        });
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final arguments =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-
     Laporan laporan = arguments['laporan'];
     Akun akun = arguments['akun'];
 
+    getLike(laporan);
+    Future<bool?> liked = isLike(akun, laporan);
+
     return Scaffold(
+      floatingActionButton: liked == false
+          ? FloatingActionButton(
+              backgroundColor: primaryColor,
+              child: IconButton(
+                onPressed: () {
+                  like(akun, laporan);
+                },
+                icon: Image.asset('assets/love.png'),
+                iconSize: 35,
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, '/add', arguments: {
+                  'akun': akun,
+                });
+              },
+            )
+          : null,
       appBar: AppBar(
         backgroundColor: primaryColor,
         title:

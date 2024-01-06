@@ -1,4 +1,3 @@
-import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:laporbook/components/vars.dart';
 import 'package:laporbook/models/akun.dart';
@@ -35,6 +34,21 @@ class _ListItemState extends State<ListItem> {
       if (context.mounted) Navigator.popAndPushNamed(context, '/dashboard');
     } catch (e) {
       print(e);
+    }
+  }
+
+  Future<String?> getLike() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection('laporan')
+          .where('docId', isEqualTo: widget.laporan.docId)
+          .get();
+      for (var documents in querySnapshot.docs) {
+        List<dynamic>? likeData = documents.data()['liked'];
+        return "${likeData?.length.toString()} Likes";
+      }
+    } catch (e) {
+      return "0 Likes";
     }
   }
 
@@ -123,6 +137,22 @@ class _ListItemState extends State<ListItem> {
                     ),
                   ),
                 ),
+                // Expanded(
+                //   child: Container(
+                //     padding: const EdgeInsets.symmetric(vertical: 8),
+                //     decoration: BoxDecoration(
+                //         color: primaryColor,
+                //         borderRadius: const BorderRadius.only(
+                //             bottomRight: Radius.circular(5)),
+                //         border: const Border.symmetric(
+                //             vertical: BorderSide(width: 1))),
+                //     alignment: Alignment.center,
+                //     child: Text(
+                //       DateFormat('dd/MM/yyyy').format(widget.laporan.tanggal),
+                //       style: headerStyle(level: 5, dark: false),
+                //     ),
+                //   ),
+                // ),
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 8),
@@ -134,11 +164,11 @@ class _ListItemState extends State<ListItem> {
                             vertical: BorderSide(width: 1))),
                     alignment: Alignment.center,
                     child: Text(
-                      DateFormat('dd/MM/yyyy').format(widget.laporan.tanggal),
+                      getLike() as String,
                       style: headerStyle(level: 5, dark: false),
                     ),
                   ),
-                )
+                ),
               ],
             )
           ],
