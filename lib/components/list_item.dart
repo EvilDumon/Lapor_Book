@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:laporbook/components/vars.dart';
 import 'package:laporbook/models/akun.dart';
 import 'package:laporbook/models/laporan.dart';
+import 'package:laporbook/components/vars.dart';
 import 'package:laporbook/components/styles.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -21,6 +21,7 @@ class ListItem extends StatefulWidget {
 }
 
 class _ListItemState extends State<ListItem> {
+  String likes = "0 Like";
   final _storage = FirebaseStorage.instance;
   final _firestore = FirebaseFirestore.instance;
 
@@ -37,7 +38,7 @@ class _ListItemState extends State<ListItem> {
     }
   }
 
-  Future<String?> getLike() async {
+  void getLike() async {
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
           .collection('laporan')
@@ -45,15 +46,16 @@ class _ListItemState extends State<ListItem> {
           .get();
       for (var documents in querySnapshot.docs) {
         List<dynamic>? likeData = documents.data()['liked'];
-        return "${likeData?.length.toString()} Likes";
+        likes = "${likeData!.length.toString()} Likes";
       }
     } catch (e) {
-      return "0 Likes";
+      print(e);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    getLike();
     return Container(
       decoration: BoxDecoration(
           border: Border.all(width: 2),
@@ -164,7 +166,7 @@ class _ListItemState extends State<ListItem> {
                             vertical: BorderSide(width: 1))),
                     alignment: Alignment.center,
                     child: Text(
-                      getLike() as String,
+                      likes,
                       style: headerStyle(level: 5, dark: false),
                     ),
                   ),
